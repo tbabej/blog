@@ -71,7 +71,7 @@ Now we're ready to put `pam_yubico` into our PAM stack. Put the following two
 lines on top of `/etc/pam.d/login`.
 
     auth [success=1 default=ignore] pam_succeed_if.so quiet user notingroup yubikey
-    auth		required	pam_yubico.so mode=challenge-response /root/.yubico/challenge-5675024
+    auth        required    pam_yubico.so mode=challenge-response chalresp_path=/root/.yubico/
 
 This two directives make the successful challenge-response for users in the
 `yubikey` group mandatory during user login authentication (first time logging,
