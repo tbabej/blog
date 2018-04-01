@@ -28,6 +28,10 @@ We need to setup basic Yubico tools, if we do not have them:
 
 Verify signatures of both of the libraries, unpack and install them.
 
+Additionally, install PAM module for yubico:
+
+    sudo dnf install pam_yubico
+
 Next, you need setup a slot on your Yubikey to support Challenge-Response
 protocol. Usually this is done on the second slot, but can be also setup on the
 first one.
