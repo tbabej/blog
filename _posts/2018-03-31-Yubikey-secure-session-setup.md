@@ -111,5 +111,61 @@ the following:
     # semodule_package -o yubikey.pp -m yubikey.mod
     # semodule -i yubikey.pp
 
+### Locking your session when Yubikey is absent
+
+The second mechanism is to ensure that your computer does not allow you to use
+it unless Yubikey is plugged in. We ensure that by setting up an udev rule that
+executes a script to lock the screen when Yubikey is removed.
+
+The following script will take care of that. Please replace the `<UID>` and
+`<command to lock your screen>` with the ones relevant to your setup:
+
+    #!/usr/bin/bash
+    
+    export DISPLAY=:0
+    export XAUTHORITY=/home/tbabej/.Xauthority
+    export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/<UID>/bus"
+    
+    if [ -z "$(pidof Xorg)" ] ; then
+        /usr/bin/systemd-cat -t "yubikey-screen-lock" /usr/bin/echo "YUBIKEY REMOVED - SCREEN LOCK NOT ACTIVATED (X session not present)"
+     elif [ -z "$(lsusb | grep Yubikey)" ] ; then
+        /usr/bin/systemd-cat -t "yubikey-screen-lock" /usr/bin/echo "YUBIKEY REMOVED - SCREEN LOCK ACTIVATED"
+    	<command to lock your screen>
+    fi
+
+Place the result (with replaced parts!) to a proper place, i.e.
+/usr/local/bin/yubikey-lock.sh and make it executable using
+
+    $ sudo chmod +x /usr/local/bin/yubikey-lock.sh
+
+At this point you can check the functionality script by removing the Yubikey
+and running the `yubikey-lock.sh` manually. It should lock your screen.
+
+Now we need to setup two udev rules that will make sure that this script is
+executed once Yubikey removal is detected. Create a file
+`/etc/udev/rules.d/90-yubikey.rules` and insert the following rule inside:
+
+    SUBSYSTEMS=="usb", ATTR{ID_MODEL_FROM_DATABASE}=="Yubico.com Yubikey 4
+    OTP+U2F+CCID", MODE="0660", GROUP="yubikey" 
+
+This marks the Yubikey events using appropriate group name. The second rule
+(placed i.e. in `/etc/udev/rules.d/90-yubikey-lock.rules` is
+
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050",
+    ATTRS{idProduct}=="0113|0114|0115|0116|0120|0402|0403|0406|0407|0410",
+    TAG+="uaccess", GOTO="yubikey_end" ACTION=="remove",
+    RUN+="/usr/local/bin/yubikey-lock.sh" LABEL="yubikey_end"
+
+To make sure these rules apply, use:
+
+    sudo udevadm control --reload-rules
+
+Now happily remove your Yubikey and falsly feel more secure (remember kids,
+with physical access it's game over anyway). However, you can still relish the
+feeling, it is a bit reassuring to see the screen go blank immediatelly after
+pulling out your smartcard device.
+
 Sources:
-https://vtluug.org/wiki/Yubikey#i3lock_2
+* https://vtluug.org/wiki/Yubikey#i3lock_2
+* https://www.reddit.com/r/i3wm/comments/85ics6/how_to_use_a_password_and_yubikey_with_i3lock://www.reddit.com/r/i3wm/comments/85ics6/how_to_use_a_password_and_yubikey_with_i3lock/
+* https://wiki.archlinux.org/index.php/yubikey
