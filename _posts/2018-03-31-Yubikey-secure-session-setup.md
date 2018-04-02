@@ -3,8 +3,6 @@ layout: post
 title: Securing your user session with Yubikey
 ---
 
-## Yubikey session protection setup
-
 In this post, we will describe how to setup your Yubikey as session-required
 smartcard - your user session will work if your Yubikey is attached to the
 computer.
