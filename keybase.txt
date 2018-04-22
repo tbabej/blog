@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/tbabej
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://tbabej.com
+  * I am tbabej (https://keybase.io/tbabej) on keybase.
+  * I have a public key ASCQqPAYF5iEfm5DX67-NQRHaYlm0wPw_sLl3s8Ar7QbeAo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "012090a8f0181798847e6e435faefe350447698966d303f0fec2e5decf00afb41b780a",
+      "host": "keybase.io",
+      "kid": "012090a8f0181798847e6e435faefe350447698966d303f0fec2e5decf00afb41b780a",
+      "uid": "af26e1e7ed2c1ab31b9bdfe2edf33619",
+      "username": "tbabej"
+    },
+    "merkle_root": {
+      "ctime": 1524404151,
+      "hash": "3779eefb9d088697e68ba3112d099d9fb57d6f65b9cc1e98047ae9b2e91a2631e3a64c288f6e85f67b8888690d1cffeaf64b6271944df32fa5ca503b945e1032",
+      "hash_meta": "8215d8e8d35475a6c3baece6094343d7dc7499666fd80a30c2c011476410f38d",
+      "seqno": 2425837
+    },
+    "service": {
+      "entropy": "XcHA92xXlwz63mvUFJ8kxEH+",
+      "hostname": "tbabej.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "1.0.47"
+  },
+  "ctime": 1524404155,
+  "expire_in": 504576000,
+  "prev": "59bcf89c8a99add00c516212216b0643900183ef16c805827136d3ee5364130d",
+  "seqno": 29,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgkKjwGBeYhH5uQ1+u/jUER2mJZtMD8P7C5d7PAK+0G3gKp3BheWxvYWTESpcCHcQgWbz4nIqZrdAMUWISIWsGQ5ABg+8WyAWCcTbT7lNkEw3EIINOXUYjQuPu9YhBW1TXfR5u+K+5RSBVlxJZaGKZ9ANHAgHCo3NpZ8RAHbCuH/+BOcKsN9mvCdr//w5ztXDEeARiFXlZswT5Dd0dt4hEVniXNsNM403Rk2Z0XvQnBYAPRe8bI3QdsBFiCahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIGDhPYip0I9zfsQXx1PHhhh3lgWZlBlz23SKKTOIUH8ho3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/tbabej
+
+==================================================================
