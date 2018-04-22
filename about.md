@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: About
 permalink: /about/
 ---
@@ -18,7 +18,3 @@ As my interests evolved, so did my backgroud. I hold (or aspire to hold) the fol
 ### More Information
 
 A place to include any other types of information that you'd like to include about yourself.
-
-### Contact me
-
-[email@domain.com](mailto:email@domain.com)
