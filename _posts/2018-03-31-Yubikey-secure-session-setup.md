@@ -30,7 +30,7 @@ Additionally, install PAM module for yubico:
 
     sudo dnf install pam_yubico
 
-To allow our user to interact with the device, we need to create a priviliged
+To allow our user to interact with the device, we need to create a privileged
 group which will have access to the Yubikey (and also will be restricted to use
 one when interacting with the computer).
 
