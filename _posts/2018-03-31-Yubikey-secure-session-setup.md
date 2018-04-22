@@ -197,6 +197,6 @@ have to unplug.  You won't forget to lock your screen ever.
 Congratulations - your Yubikey now truly became a key for your computer.
 
 Sources:
-* https://vtluug.org/wiki/Yubikey#i3lock_2
-* https://www.reddit.com/r/i3wm/comments/85ics6/how_to_use_a_password_and_yubikey_with_i3lock://www.reddit.com/r/i3wm/comments/85ics6/how_to_use_a_password_and_yubikey_with_i3lock/
-* https://wiki.archlinux.org/index.php/yubikey
+* <https://vtluug.org/wiki/Yubikey#i3lock_2>
+* <https://www.reddit.com/r/i3wm/comments/85ics6/how_to_use_a_password_and_yubikey_with_i3lock://www.reddit.com/r/i3wm/comments/85ics6/how_to_use_a_password_and_yubikey_with_i3lock/>
+* <https://wiki.archlinux.org/index.php/yubikey>
