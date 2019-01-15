@@ -1,5 +1,10 @@
 ---
 title: Securing your user session with Yubikey
+layout: post
+date: 2018-03-31
+mood: sad
+category: 
+- docs
 ---
 
 In this post, we will describe how to setup your Yubikey as session-required
@@ -18,16 +23,20 @@ login into the machine.
 
 We need to setup basic Yubico tools, if we do not have them:
 
-    curl -sO https://developers.yubico.com/yubico-c/Releases/libyubikey-1.13.tar.gz.sig
-    curl -sO https://developers.yubico.com/yubico-c/Releases/libyubikey-1.13.tar.gz
-    curl -sO https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3.tar.gz.sig
-    curl -sO https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3.tar.gz
+```console
+$ curl -sO https://developers.yubico.com/yubico-c/Releases/libyubikey-1.13.tar.gz.sig
+$ curl -sO https://developers.yubico.com/yubico-c/Releases/libyubikey-1.13.tar.gz
+$ curl -sO https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3.tar.gz.sig
+$ curl -sO https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3.tar.gz
+```
 
 Verify signatures of both of the libraries, unpack and install them.
 
 Additionally, install PAM module for yubico:
 
-    sudo dnf install pam_yubico
+```console
+$ sudo dnf install pam_yubico
+```
 
 To allow our user to interact with the device, we need to create a privileged
 group which will have access to the Yubikey (and also will be restricted to use
@@ -35,41 +44,49 @@ one when interacting with the computer).
 
 To do that, create the `yubikey` group and add your user to it.
 
-     sudo groupadd yubikey
-     sudo usermod -aG yubikey $USER
+```console
+$ sudo groupadd yubikey
+$ sudo usermod -aG yubikey $USER
+```
 
 Now we can create an udev rule that allows access to the device for all members
 of `yubikey`, by creating a `/etc/udev/rules.d/90-yubikey.rules` file containing:
 
-    SUBSYSTEMS=="usb", ATTR{ID_MODEL_FROM_DATABASE}=="Yubico.com Yubikey 4 OTP+U2F+CCID", MODE="0666", GROUP="yubikey"
+```console
+SUBSYSTEMS=="usb", ATTR{ID_MODEL_FROM_DATABASE}=="Yubico.com Yubikey 4 OTP+U2F+CCID", MODE="0666", GROUP="yubikey"
+```
 
 Next, you need setup a slot on your Yubikey to support Challenge-Response
 protocol. Usually this is done on the second slot, but can be also setup on the
 first one.
 
-    $ sudo ykpersonalize -2 -ochal-resp -ochal-hmac -ohmac-lt64 -oserial-api-visible
-    Configuration data to be written to key configuration 2:
-    
-    fixed: m:
-    uid: n/a
-    key: h:<key hash>
-    acc_code: h:000000000000
-    OATH IMF: h:0
-    ticket_flags: CHAL_RESP
-    config_flags: CHAL_HMAC|HMAC_LT64
-    extended_flags: SERIAL_API_VISIBLE
+```console
+$ sudo ykpersonalize -2 -ochal-resp -ochal-hmac -ohmac-lt64 -oserial-api-visible
+Configuration data to be written to key configuration 2:
+
+fixed: m:
+uid: n/a
+key: h:<key hash>
+acc_code: h:000000000000
+OATH IMF: h:0
+ticket_flags: CHAL_RESP
+config_flags: CHAL_HMAC|HMAC_LT64
+extended_flags: SERIAL_API_VISIBLE
+```
 
 This command just configures the second slot of Yubikey. Now, we are ready to
 create a challenge file which will be used to authorize this particular Yubikey
 during login.
 
-    $ ykpamcfg -2 -v
-    debug: util.c:212 (check_firmware_version): YubiKey Firmware version: 4.3.5
-    
-    Directory /home/tbabej/.yubico created successfully.
-    Sending 63 bytes HMAC challenge to slot 2
-    Sending 63 bytes HMAC challenge to slot 2
-    Stored initial challenge and expected response in '/home/.tbabej/challenge-5675024'.
+```console
+$ ykpamcfg -2 -v
+debug: util.c:212 (check_firmware_version): YubiKey Firmware version: 4.3.5
+
+Directory /home/tbabej/.yubico created successfully.
+Sending 63 bytes HMAC challenge to slot 2
+Sending 63 bytes HMAC challenge to slot 2
+Stored initial challenge and expected response in '/home/.tbabej/challenge-5675024'.
+```
 
 This created the challenge file named `challenge-5675024`. This challenge will
 be used by `pam_yubico` PAM module to cryptographically verify that your
@@ -79,8 +96,10 @@ Now we're ready to put `pam_yubico` into our PAM stack. Put the following two
 lines on top of `/etc/pam.d/login`, `/etc/pam.d/system-auth` and
 `/etc/pam.d/password-auth`:
 
-    auth [success=1 default=ignore] pam_succeed_if.so quiet user notingroup yubikey
-    auth        requisite    pam_yubico.so mode=challenge-response debug
+```console
+auth [success=1 default=ignore] pam_succeed_if.so quiet user notingroup yubikey
+auth        requisite    pam_yubico.so mode=challenge-response debug
+```
 
 This two directives make the successful challenge-response for users in the
 `yubikey` group mandatory during user login authentication (first time logging,
@@ -104,16 +123,20 @@ If your login is failing and you're running SELinux, see below.
 This subsection is important if you're running a SELinux-powered distro.
 Temporarily disable the SELinux protection by going into permissive mode.
 
-    # setenforce 0
+```console
+# setenforce 0
+```
 
 Now attempt to login. If the fix helped, the SELinux was indeed an issue, and
 you can create a SELinux policy allowing access to necessary resources using
 the following:
 
-    # grep avc /var/log/audit/audit.log | audit2allow -M yubikey
-    # checkmodule -M -m -o yubikey.mod yubikey.te
-    # semodule_package -o yubikey.pp -m yubikey.mod
-    # semodule -i yubikey.pp
+```console
+# grep avc /var/log/audit/audit.log | audit2allow -M yubikey
+# checkmodule -M -m -o yubikey.mod yubikey.te
+# semodule_package -o yubikey.pp -m yubikey.mod
+# semodule -i yubikey.pp
+```
 
 ### Locking your session when Yubikey is absent
 
@@ -127,17 +150,19 @@ which is going to run under the credentials and session of our user instead.
 
 Put the following unit file into `~/.config/systemd/user/screenlock.service`:
 
-    [Unit]
-    Description=Run screenlock
-    After=graphical.target
-    
-    [Service]
-    Type=simple
-    Environment=DISPLAY=:0
-    ExecStart=/usr/bin/i3lock
-    
-    [Install]
-    WantedBy=multi-user.target
+```console
+[Unit]
+Description=Run screenlock
+After=graphical.target
+
+[Service]
+Type=simple
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/i3lock
+
+[Install]
+WantedBy=multi-user.target
+```
 
 Running `systemctl --user start screenlock.service` should now lock your screen
 (which you can only unlock if Yubikey is present).
@@ -146,38 +171,48 @@ The following script will take care of running the service from within the root
 session. Please replace the `<UID>` and `<command to lock your screen>` with
 the ones relevant to your setup:
 
-    if [ -z "$(pidof Xorg)" ]
-    then
-      /usr/bin/systemd-cat -t "yubikey-screen_lock-trigger" /usr/bin/echo "YUBIKEY REMOVED - LOCK NOT ACTIVATED (X session absent)"
-    elif [ -z "$(lsusb | grep Yubikey)" ]
-    then
-      /usr/bin/systemd-cat -t "yubikey-screen_lock-trigger" /usr/bin/echo "YUBIKEY REMOVED - SCREEN LOCK ACTIVATED"
-      su -c 'XDG_RUNTIME_DIR="/run/user/<UID>" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/<UID>/bus" systemctl --user start screenlock' <USERNAME>
-    fi
+```bash
+if [ -z "$(pidof Xorg)" ]
+then
+  /usr/bin/systemd-cat -t "yubikey-screen_lock-trigger" /usr/bin/echo "YUBIKEY REMOVED - LOCK NOT ACTIVATED (X session absent)"
+elif [ -z "$(lsusb | grep Yubikey)" ]
+then
+  /usr/bin/systemd-cat -t "yubikey-screen_lock-trigger" /usr/bin/echo "YUBIKEY REMOVED - SCREEN LOCK ACTIVATED"
+  su -c 'XDG_RUNTIME_DIR="/run/user/<UID>" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/<UID>/bus" systemctl --user start screenlock' <USERNAME>
+fi
+```
 
 Place the result (with replaced parts) to a proper place, i.e.
 /usr/local/bin/yubikey-lock.sh and make it executable using
 
-    $ sudo chmod +x /usr/local/bin/yubikey-lock.sh
+```console
+$ sudo chmod +x /usr/local/bin/yubikey-lock.sh
+```
 
 At this point you can check the functionality of the script by removing the
 Yubikey and running the `yubikey-lock.sh` manually from a root shell. It should
 lock your screen and prevent you logging without replugging the Yubikey.
 
-    $ su
-    # yubikey-lock.sh
+```console
+$ su
+# yubikey-lock.sh
+```
 
 Now we need to setup the udev rule that will make sure that this script is
 executed once Yubikey removal is detected. Create a file
 `/etc/udev/rules.d/90-yubikey-lock.rules` and insert the following rule inside:
 
-    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", ATTRS{idProduct}=="0113|0114|0115|0116|0120|0402|0403|0406|0407|0410",
-    TAG+="uaccess", GOTO="yubikey_end" ACTION=="remove",
-    RUN+="/usr/local/bin/yubikey-lock.sh" LABEL="yubikey_end"
+```console
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", ATTRS{idProduct}=="0113|0114|0115|0116|0120|0402|0403|0406|0407|0410",
+TAG+="uaccess", GOTO="yubikey_end" ACTION=="remove",
+RUN+="/usr/local/bin/yubikey-lock.sh" LABEL="yubikey_end"
+```
 
 To make sure rule applies, use:
 
-    sudo udevadm control --reload-rules
+```console
+$ sudo udevadm control --reload-rules
+```
 
 Now happily remove your Yubikey and falsly feel more secure (remember kids,
 with physical access it's game over anyway). However, you can still relish the
