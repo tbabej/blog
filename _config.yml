@@ -79,26 +79,22 @@ baseurl: ""
 # !! You don't need to change any of the configuration flags below !!
 #
 
-permalink: /:title/
-
 # Includes
 include: ["_pages"]
 
 # Outputting
-permalink: /:categories/:title.html
+permalink: /:title/
 category_dir: categories
 
 # Jekyll 3 now only supports Kramdown for Markdown
-markdown: kramdown
-excerpt_separator: <!--more-->
-#kramdown:
+kramdown:
   # Use GitHub flavored markdown, including triple backtick fenced code blocks
-  # input: GFM
+  input: GFM
   # Jekyll 3 and GitHub Pages now only support rouge for syntax highlighting
-  #  syntax_highlighter: rouge
-  #  syntax_highlighter_opts:
-  #    # Use existing pygments syntax highlighting css
-  #    css_class: 'highlight'
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    # Use existing pygments syntax highlighting css
+    css_class: 'highlight'
 
 # Set the Sass partials directory, as we're using @imports
 sass:
